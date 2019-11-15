@@ -1,0 +1,11 @@
+{
+  "name": "bot",
+  "version": "0.0.1",
+  "description": "Fallen Shrine discord bot",
+  "main": "bot.js",
+  "author": "Kyuno",
+  "dependencies": {
+    "discord.io": "github:woor/discord.io#gateway_v6",
+    "winston": "^3.2.1"
+  }
+}
