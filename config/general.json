@@ -2,5 +2,14 @@
   "operator": {
     "debug": "#",
     "command": "!"
+  },
+  "channels": {},
+  "path": {
+    "defSiege": "./defs/defSiege.json"
+  },
+  "userLock": true,
+  "userDefLockParam": {
+    "nb4nat": 2,
+    "nb5nat": 3
   }
 }
