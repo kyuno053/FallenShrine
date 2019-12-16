@@ -36,6 +36,11 @@ bot.on('ready', function () {
 
 
 });
+
+bot.on('disconnect', function(erMsg, code) {
+    console.log('----- Bot disconnected from Discord with code', code, 'for reason:', erMsg, '-----');
+});
+
 bot.on('message', function (user, userID, channelID, message, event) {
 
     let messageOperator = message.slice(0, 1);
@@ -56,10 +61,6 @@ bot.on('message', function (user, userID, channelID, message, event) {
 
 
 });
-
-
-bot.connect();
-
 setInterval(function () {
     if (bot.connected === false) {
         console.log("[DEBUG] Disconnected!");
@@ -82,20 +83,6 @@ setInterval(function () {
         }, 1000);
     }
 }, 6000);
-
-setInterval(function () {
-  /*  fs.writeFile("./config/general.json", JSON.stringify(config), function (err) {
-        if (err) throw err;
-    });
-    try {
-        if (fs.existsSync("./config/general.json")) {
-            config = JSON.parse(fs.readFileSync("./config/general.json"));
-        }
-    } catch(err) {
-        console.error(err);
-    }*/
-
-},30000);
 
 
 /**
@@ -554,8 +541,8 @@ function settingsManagement(user, userID, channelID, args) {
                     }
                 }else {
                     bot.sendMessage({
-                       to:channelID,
-                       message:"```diff\n- Missing parameter!```"
+                        to:channelID,
+                        message:"```diff\n- Missing parameter!```"
                     });
                 }
 
@@ -578,7 +565,7 @@ function settingsManagement(user, userID, channelID, args) {
  */
 
 function generateUsers() {
-    if (!config.userLock) {
+   if (!config.userLock) {
         let data = {users: []};
         for (let user in userList) {
             if (!userList[user].bot) {
