@@ -10,11 +10,9 @@ let bot = new Discord.Client({
     autorun: true
 });
 
-let userList = [];
-
 
 bot.on('ready', function () {
-    console.log("Bot ready! - connected: " + bot.connected);
+    log.info("Bot ready! - connected: " + bot.connected);
     userList = bot.users;
 
     try {
@@ -22,7 +20,7 @@ bot.on('ready', function () {
             config = JSON.parse(fs.readFileSync(configPath));
       //  }
     } catch(err) {
-        console.error(err);
+        log.error(err);
     }
 
     try {
@@ -33,14 +31,14 @@ bot.on('ready', function () {
             generateUsers();
         }
     } catch(err) {
-        console.error(err);
+        log.error(err);
     }
 
 
 });
 
 bot.on('disconnect', function(erMsg, code) {
-    console.log('----- Bot disconnected from Discord with code', code, 'for reason:', erMsg, '-----');
+    log.info('----- Bot disconnected from Discord with code', code, 'for reason:', erMsg, '-----');
 });
 
 bot.on('message', function (user, userID, channelID, message, event) {
@@ -65,12 +63,12 @@ bot.on('message', function (user, userID, channelID, message, event) {
 });
 setInterval(function () {
     if (bot.connected === false) {
-        console.log("[DEBUG] Disconnected!");
+        log.info("[DEBUG] Disconnected!");
         bot.disconnect();
         setTimeout(function () {
             bot.connect();
             if (bot.connected === true) {
-                console.log("[DEBUG]Reconnected !");
+                log.info("[DEBUG]Reconnected !");
                 try {
                     if (fs.existsSync("./defs/defSiege.json")) {
                         userData = JSON.parse(fs.readFileSync("./defs/defSiege.json"));
@@ -79,7 +77,7 @@ setInterval(function () {
                         generateUsers();
                     }
                 } catch(err) {
-                    console.error(err);
+                    log.error(err);
                 }
             }
         }, 1000);
