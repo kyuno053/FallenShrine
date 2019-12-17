@@ -1,5 +1,7 @@
 let Discord = require("discord.io");
 const token = require("./config/auth").token;
+const configPath = "./config/general.json";
+const log = require('simple-node-logger').createSimpleFileLogger("./bot.log");
 let config;
 let userData = null;
 let fs = require('fs');
@@ -16,9 +18,9 @@ bot.on('ready', function () {
     userList = bot.users;
 
     try {
-        if (fs.existsSync("./config/general.json")) {
-            config = JSON.parse(fs.readFileSync("./config/general.json"));
-        }
+       // if (fs.existsSync(configPath)) {
+            config = JSON.parse(fs.readFileSync(configPath));
+      //  }
     } catch(err) {
         console.error(err);
     }
@@ -534,7 +536,7 @@ function settingsManagement(user, userID, channelID, args) {
                                 to:channelID,
                                 message:"```diff\n+ channel set for GS content!```"
                             });
-                            fs.writeFile("./config/general.json", JSON.stringify(config), function (err) {
+                            fs.writeFile(configPath, JSON.stringify(config), function (err) {
                                 if (err) throw err;
                             });
                             break;
@@ -580,7 +582,7 @@ function generateUsers() {
             if (err) throw err;
         });
         config.userLock = true;
-        fs.writeFile("./config/general.json", JSON.stringify(config), function (err) {
+        fs.writeFile(configPath, JSON.stringify(config), function (err) {
             if (err) throw err;
         });
     }
