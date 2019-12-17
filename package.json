@@ -6,6 +6,15 @@
   "author": "Kyuno",
   "dependencies": {
     "discord.io": "github:woor/discord.io#gateway_v6",
+    "fs": "0.0.1-security",
+    "nodemon": "^1.19.4",
     "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^6.7.2",
+    "eslint-config-strongloop": "^2.1.0"
+  },
+  "scripts": {
+    "lint": "eslint --ignore-path .gitignore ."
   }
 }
