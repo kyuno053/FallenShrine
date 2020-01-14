@@ -1,5 +1,7 @@
 let Discord = require("discord.io");
 const token = require("./config/auth").token;
+const configPath = "./config/general.json";
+const log = require('simple-node-logger').createSimpleFileLogger("./bot.log");
 let config;
 let userData = null;
 let fs = require('fs');
@@ -8,18 +10,18 @@ let bot = new Discord.Client({
     autorun: true
 });
 
-let userList = [];
 
-
-bot.on('ready', function () {console.log("Bot ready! - connected: " + bot.connected);
+bot.on('ready', function () {
+    log.info("Bot ready! - connected: " + bot.connected);
+    console.log("Bot ready! - connected: " + bot.connected);
     userList = bot.users;
 
     try {
-        if (fs.existsSync("./config/general.json")) {
-            config = JSON.parse(fs.readFileSync("./config/general.json"));
+        if (fs.existsSync(configPath)) {
+            config = JSON.parse(fs.readFileSync(configPath));
         }
     } catch(err) {
-        console.error(err);
+        log.error(err);
     }
 
     try {
@@ -30,14 +32,14 @@ bot.on('ready', function () {console.log("Bot ready! - connected: " + bot.connec
             generateUsers();
         }
     } catch(err) {
-        console.error(err);
+        log.error(err);
     }
 
 
 });
 
 bot.on('disconnect', function(erMsg, code) {
-    console.log('----- Bot disconnected from Discord with code', code, 'for reason:', erMsg, '-----');
+    log.info('----- Bot disconnected from Discord with code: ', code, ' for reason:', erMsg, '-----');
 });
 
 bot.on('message', function (user, userID, channelID, message, event) {
@@ -69,6 +71,9 @@ bot.on('guildMemberAdd',function(user) {
            username: user.username,
            siege: {nat5def: [], nat4def: [], lock: {"nat5":false,"nat4":false}}
        });
+       fs.writeFile(config.path.defSiege, JSON.stringify(userData), function (err) {
+           if (err) throw err;
+       });
    }
 
 
@@ -83,19 +88,26 @@ bot.on('guildMemberRemove',function(user) {
             index = userData.users.indexOf(users);
         }
     }
-    userData.users.slice(index,1);
+    userData.users.splice(index,1);
+    fs.writeFile(config.path.defSiege, JSON.stringify(userData), function (err) {
+        if (err) throw err;
+    });
 })
 
 
+/**
+ * Poll tu test connection
+ * if is disconnected , try to reconnect
+ */
 
 setInterval(function () {
     if (bot.connected === false) {
-        console.log("[DEBUG] Disconnected!");
+        log.info("[DEBUG] Disconnected!");
         bot.disconnect();
         setTimeout(function () {
             bot.connect();
             if (bot.connected === true) {
-                console.log("[DEBUG]Reconnected !");
+                log.info("[DEBUG]Reconnected !");
                 try {
                     if (fs.existsSync("./defs/defSiege.json")) {
                         userData = JSON.parse(fs.readFileSync("./defs/defSiege.json"));
@@ -104,13 +116,23 @@ setInterval(function () {
                         generateUsers();
                     }
                 } catch(err) {
-                    console.error(err);
+                    log.error(err);
                 }
             }
         }, 1000);
     }
 }, 6000);
 
+/**
+ *Poll to refresh UserData
+ *
+ */
+
+setInterval(function() {
+    if (fs.existsSync("./defs/defSiege.json")) {
+        userData = JSON.parse(fs.readFileSync("./defs/defSiege.json"));
+    }
+},6000);
 
 /**
  *
@@ -561,7 +583,7 @@ function settingsManagement(user, userID, channelID, args) {
                                 to:channelID,
                                 message:"```diff\n+ channel set for GS content!```"
                             });
-                            fs.writeFile("./config/general.json", JSON.stringify(config), function (err) {
+                            fs.writeFile(configPath, JSON.stringify(config), function (err) {
                                 if (err) throw err;
                             });
                             break;
@@ -607,7 +629,7 @@ function generateUsers() {
             if (err) throw err;
         });
         config.userLock = true;
-        fs.writeFile("./config/general.json", JSON.stringify(config), function (err) {
+        fs.writeFile(configPath, JSON.stringify(config), function (err) {
             if (err) throw err;
         });
     }

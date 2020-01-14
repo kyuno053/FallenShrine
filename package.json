@@ -6,8 +6,10 @@
   "author": "Kyuno",
   "dependencies": {
     "discord.io": "github:woor/discord.io#gateway_v6",
+    "express": "^4.17.1",
     "fs": "0.0.1-security",
     "nodemon": "^1.19.4",
+    "simple-node-logger": "^18.12.23",
     "winston": "^3.2.1"
   },
   "devDependencies": {
@@ -15,6 +17,8 @@
     "eslint-config-strongloop": "^2.1.0"
   },
   "scripts": {
-    "lint": "eslint --ignore-path .gitignore ."
+    "lint": "eslint --ignore-path .gitignore .",
+    "bot": "node bot.js",
+    "server": "node interface\\server\\server.js"
   }
 }
