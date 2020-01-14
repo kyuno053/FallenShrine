@@ -11,8 +11,7 @@ let bot = new Discord.Client({
 let userList = [];
 
 
-bot.on('ready', function () {
-    console.log("Bot ready! - connected: " + bot.connected);
+bot.on('ready', function () {console.log("Bot ready! - connected: " + bot.connected);
     userList = bot.users;
 
     try {
@@ -61,6 +60,34 @@ bot.on('message', function (user, userID, channelID, message, event) {
 
 
 });
+bot.on('guildMemberAdd',function(user) {
+    console.log('member add:'+user.toString());
+    //TODO : add new user
+   if(!user.bot){
+       userData.users.push({
+           userId: user.id,
+           username: user.username,
+           siege: {nat5def: [], nat4def: [], lock: {"nat5":false,"nat4":false}}
+       });
+   }
+
+
+
+});
+
+bot.on('guildMemberRemove',function(user) {
+    console.log('member remove :'+user.toString());
+    let index;
+    for(const users of userData.users){
+        if(user.id === users.userId){
+            index = userData.users.indexOf(users);
+        }
+    }
+    userData.users.slice(index,1);
+})
+
+
+
 setInterval(function () {
     if (bot.connected === false) {
         console.log("[DEBUG] Disconnected!");
