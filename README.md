@@ -6,4 +6,3 @@ discord bot for Summoner's War french guild Fallen Shrine
 
 # Usefull Documentation
 [discord.io library](https://izy521.github.io/discord.io-docs/index.html)
-[discord markdown](https://www.writebots.com/discord-text-formatting/)
