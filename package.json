@@ -6,6 +6,7 @@
   "author": "Kyuno",
   "dependencies": {
     "discord.io": "github:woor/discord.io#gateway_v6",
+    "express": "^4.17.1",
     "winston": "^3.2.1"
   }
 }
