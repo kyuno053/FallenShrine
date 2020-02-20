@@ -1,1 +1,21 @@
-{"operator":{"debug":"#","command":"!","setting":"%"},"channels":{"gs":"655819815910506516"},"path":{"defSiege":"./defs/defSiege.json"},"userLock":true,"userDefLockParam":{"nb4nat":2,"nb5nat":3}}
+{
+  "operator": {
+    "debug": "#",
+    "command": "!",
+    "setting": "%"
+  },
+  "channels": {
+    "gs": "655819815910506516"
+  },
+  "adminRoles": [
+    "680115408837148740"
+  ],
+  "path": {
+    "defSiege": "./defs/defSiege.json"
+  },
+  "userLock": true,
+  "userDefLockParam": {
+    "nb4nat": 2,
+    "nb5nat": 3
+  }
+}
