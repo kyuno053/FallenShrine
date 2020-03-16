@@ -9,6 +9,7 @@ let userData = null;
 let fs = require('fs');
 let srv = express();
 let servId = null;
+let messageQueue = [];
 let bot = new Discord.Client({
   token: token,
   autorun: true,
@@ -56,8 +57,6 @@ bot.on('ready', function() {
     log.error(err);
   }
 
-  //isAdmin(null);
-
 });
 bot.setPresence({
   game: {
@@ -76,27 +75,18 @@ bot.on('message', function(user, userID, channelID, message, event) {
   if (servId == null) {
     servId = bot.channels[channelID].guild_id;
   }
-  let messageOperator = message.slice(0, 1);
 
-  switch (messageOperator) {
-
-    case config.operator.debug:
-      debugProcess(user, userID, channelID, message);
-      break;
-    case config.operator.command:
-      commandProcess(user, userID, channelID, message);
-      break;
-
-    case config.operator.setting:
-      settingProcess(user, userID, channelID, message);
-      break;
-  }
-
-
+  const data = {
+    'user': user,
+    'userID': userID,
+    'channelID': channelID,
+    'message': message,
+    'event': event,
+  };
+  messageQueue.push(data);
 });
 bot.on('guildMemberAdd', function(user) {
   console.log('member add:' + user.toString());
-  //TODO : add new user
   if (!user.bot) {
     userData.users.push({
       userId: user.id,
@@ -112,7 +102,7 @@ bot.on('guildMemberAdd', function(user) {
 });
 
 bot.on('guildMemberRemove', function(user) {
-  console.log('member remove :' + user.toString());
+  log.info('[WARN] member remove :' + user.toString());
   let index;
   for (const users of userData.users) {
     if (user.id === users.userId) {
@@ -124,6 +114,33 @@ bot.on('guildMemberRemove', function(user) {
     if (err) throw err;
   });
 });
+
+/**
+ * function to process the queue
+ */
+setInterval(function() {
+  if (messageQueue.length !== 0) {
+    for (let i = messageQueue.length - 1; i >= 0; i--) {
+      let data = messageQueue[i];
+      log.info('[WARN] command: '+data.message+' - user: '+data.user);
+      let messageOperator = data.message.slice(0, 1);
+      switch (messageOperator) {
+
+        case config.operator.debug:
+          debugProcess(data.user, data.userID, data.channelID, data.message);
+          break;
+        case config.operator.command:
+          commandProcess(data.user, data.userID, data.channelID, data.message);
+          break;
+
+        case config.operator.setting:
+          settingProcess(data.user, data.userID, data.channelID, data.message);
+          break;
+      }
+      messageQueue.splice(i, 1);
+    }
+  }
+}, 500);
 
 
 /**
@@ -162,7 +179,16 @@ setInterval(function() {
   if (fs.existsSync('./defs/defSiege.json')) {
     userData = JSON.parse(fs.readFileSync('./defs/defSiege.json'));
   }
+  log.info('[ACTION] reload userData');
+
 }, 6000);
+
+setInterval(function() {
+  fs.writeFile(config.path.defSiege, JSON.stringify(userData), function(err) {
+    if (err) throw err;
+  });
+  log.info('[ACTION] save userData');
+},5900);
 
 /**
  *
@@ -266,12 +292,25 @@ function gsManagement(user, userID, channelID, args) {
 
   if (args.length > 1) {
 
+    args_copy = [...args];
+    args_copy.splice(0, 2);
+    unsplit = '';
+    for (let i = 0; i < args_copy.length; i++) {
+      unsplit = unsplit + args_copy[i];
+      if (args_copy[i + 1] !== undefined) {
+        unsplit = unsplit + ' ';
+      }
+    }
+    if (unsplit.substr(0, 1) === ' ') {
+      unsplit = unsplit.substr(1);
+    }
+
     let mobs = null;
     switch (args[1]) {
 
       case 'addNat5Def':
 
-        mobs = args[2].split('/');
+        mobs = unsplit.split('/');
         if (mobs.length > 3) {
           bot.sendMessage({
             to: channelID,
@@ -283,32 +322,27 @@ function gsManagement(user, userID, channelID, args) {
             message: '```css\n#gs Too much registered teams!\n```',
           });
         } else {
-          if (!testDefDupes(mobs, userID)) {
-            if (args[3] != undefined) {
-              saveDef5Siege(mobs, userID, true);
-              bot.sendMessage({
-                to: channelID,
-                message: '```css\n#gs your team\n```\n```diff\n- ' + mobs[0] + ' ' + mobs[1] + ' ' + mobs[2] + '\n```\n```fix\n+ Strong team successfully added! \n```',
-              });
-            } else {
-              saveDef5Siege(mobs, userID, false);
-              bot.sendMessage({
-                to: channelID,
-                message: '```css\n#gs your team\n```\n```diff\n- ' + mobs[0] + ' ' + mobs[1] + ' ' + mobs[2] + '\n```\n```fix\n+ Team successfully added! \n```',
-              });
-            }
-          } else {
+
+          if (args[args.length - 1] == 'strong') {
+            saveDef5Siege(mobs, userID, true);
             bot.sendMessage({
               to: channelID,
-              message: '```css\n#gs your team is already registered!\n```',
+              message: '```css\n#gs your team\n```\n```diff\n- ' + mobs[0] + ' ' + mobs[1] + ' ' + mobs[2] + '\n```\n```fix\n+ Strong team successfully added! \n```',
+            });
+          } else {
+            saveDef5Siege(mobs, userID, false);
+            bot.sendMessage({
+              to: channelID,
+              message: '```css\n#gs your team\n```\n```diff\n- ' + mobs[0] + ' ' + mobs[1] + ' ' + mobs[2] + '\n```\n```fix\n+ Team successfully added! \n```',
             });
           }
+
         }
 
         break;
       case 'addNat4Def':
 
-        mobs = args[2].split('/');
+        mobs = unsplit.split('/');
         if (mobs.length > 3) {
           bot.sendMessage({
             to: channelID,
@@ -320,28 +354,32 @@ function gsManagement(user, userID, channelID, args) {
             message: '```css\n#gs Too much registered teams!\n```',
           });
         } else {
-          if (!testDefDupes(mobs, userID)) {
-            if (args[3] != undefined) {
-              saveDef4Siege(mobs, userID, true);
-              bot.sendMessage({
-                to: channelID,
-                message: '```css\n#gs your team\n```\n```fix\n- ' + mobs[0] + ' ' + mobs[1] + ' ' + mobs[2] + '\n```\n```fix\n+ Strong team successfully added! \n```',
-              });
-            } else {
-              saveDef4Siege(mobs, userID, false);
-              bot.sendMessage({
-                to: channelID,
-                message: '```css\n#gs your team\n```\n```fix\n- ' + mobs[0] + ' ' + mobs[1] + ' ' + mobs[2] + '\n```\n```fix\n+ Team successfully added! \n```',
-              });
-            }
-          } else {
+
+          if (args[args.length - 1] == 'strong') {
+            saveDef4Siege(mobs, userID, true);
             bot.sendMessage({
               to: channelID,
-              message: '```css\n#gs your team is already registered!\n```',
+              message: '```css\n#gs your team\n```\n```fix\n- ' + mobs[0] + ' ' + mobs[1] + ' ' + mobs[2] + '\n```\n```fix\n+ Strong team successfully added! \n```',
+            });
+          } else {
+            saveDef4Siege(mobs, userID, false);
+            bot.sendMessage({
+              to: channelID,
+              message: '```css\n#gs your team\n```\n```fix\n- ' + mobs[0] + ' ' + mobs[1] + ' ' + mobs[2] + '\n```\n```fix\n+ Team successfully added! \n```',
             });
           }
+
         }
 
+        break;
+
+      case 'modify':
+
+        modifyTeam(unsplit, userID, channelID);
+        break;
+
+      case 'delete':
+        deleteTeams(unsplit, userID, channelID);
         break;
 
 
@@ -356,6 +394,7 @@ function gsManagement(user, userID, channelID, args) {
       case 'reset':
         resetTeamByUser(userID, channelID);
         break;
+
 
       case 'help':
         gsHelp(args, channelID);
@@ -409,6 +448,12 @@ function gsHelp(args, channelID) {
           message: '```css\n#gs This command will reset all teams added by the user who use it.```',
         });
         break;
+      case 'modify':
+        bot.sendMessage({
+          to: channelID,
+          message: '```css\n#gs This command will modify a team. [synthax example: !gs modify seara/orion/perna->jeanne/perna/taranys][tips: actual team -> new team]```',
+        });
+        break;
       case 'help':
         bot.sendMessage({
           to: channelID,
@@ -425,6 +470,7 @@ function gsHelp(args, channelID) {
         '\n !gs addNat4Def monster1/monster2/monster3 : Add a 4 star tower def in gs defence team.' +
         '\n !gs showMyTeams : Show all defence team you have saved.' +
         '\n !gs showAllTeams : Show all teams of all players.[ADMIN ONLY]' +
+        '\n !gs modify : Modify a team.' +
         '\n !gs reset : Reset all teams added by a user. ```',
     });
 
@@ -433,6 +479,94 @@ function gsHelp(args, channelID) {
 
 }
 
+function modifyTeam(args, userId, channelId) {
+
+  let teams = args.split('->');
+  let actual = teams[0].split('/');
+  let future = teams[1].split('/');
+  let isFound = false;
+  for (let user of userData.users) {
+    if (user.userId === userId) {
+
+      for (let def4 of user.siege.nat4def) {
+        if (isFound === false) {
+          if (def4.first === actual[0] && def4.second === actual[1] && def4.third === actual[2]) {
+            isFound = true;
+            user.siege.nat4def.splice(user.siege.nat4def.indexOf(def4), 1);
+            saveDef4Siege(future, userId, false);
+          }
+        }
+      }
+      for (let def5 of user.siege.nat5def) {
+        if (isFound === false) {
+          if (def5.first === actual[0] && def5.second === actual[1] && def5.third === actual[2]) {
+            isFound = true;
+            const index = user.siege.nat5def.indexOf(def5);
+            user.siege.nat5def.splice(index, 1);
+            saveDef5Siege(future, userId, false);
+          }
+
+
+        }
+      }
+    }
+    if (isFound === true) {
+      bot.sendMessage({
+        to: channelId,
+        message: '```diff\n+ Team successfully changed! \n```',
+      });
+    } else {
+      bot.sendMessage({
+        to: channelId,
+        message: '```diff\n- Team not found! \n```',
+      });
+    }
+  }
+
+
+}
+
+function deleteTeams(args, userId, channelId) {
+  let actual = args.split('/');
+  let isFound = false;
+  for (let user of userData.users) {
+    if (user.userId === userId) {
+
+      for (let def4 of user.siege.nat4def) {
+        if (isFound === false) {
+          if (def4.first === actual[0] && def4.second === actual[1] && def4.third === actual[2]) {
+            isFound = true;
+            user.siege.nat4def.splice(user.siege.nat4def.indexOf(def4), 1);
+          }
+        }
+      }
+      for (let def5 of user.siege.nat5def) {
+        if (isFound === false) {
+          if (def5.first === actual[0] && def5.second === actual[1] && def5.third === actual[2]) {
+            isFound = true;
+            const index = user.siege.nat5def.indexOf(def5);
+            user.siege.nat5def.splice(index, 1);
+          }
+
+
+        }
+      }
+    }
+    if (isFound === true) {
+      bot.sendMessage({
+        to: channelId,
+        message: '```diff\n+ Team successfully deleted! \n```',
+      });
+    } else {
+      bot.sendMessage({
+        to: channelId,
+        message: '```diff\n- Team not found! \n```',
+      });
+    }
+  }
+
+
+}
 
 /**
  *
@@ -489,32 +623,6 @@ function saveDef5Siege(args, userId, isStrong) {
   });
 }
 
-/**
- *
- * @param args
- * @param userId
- * @returns {boolean}
- */
-
-function testDefDupes(args, userId) {
-  let isDupe = false;
-  for (let user of userData.users) {
-    if (user.userId === userId) {
-      for (let def4 of user.siege.nat4def) {
-        if (def4.first === args[0] && def4.second === args[1] && def4.third === args[2]) {
-          isDupe = true;
-        }
-      }
-      for (let def5 of user.siege.nat5def) {
-        if (def5.first === args[0] && def5.second === args[1] && def5.third === args[2]) {
-          isDupe = true;
-        }
-      }
-
-    }
-  }
-  return isDupe;
-}
 
 /**
  *
@@ -718,11 +826,11 @@ function settingsManagement(user, userID, channelID, args) {
           let roleId = null;
           let botRoles = [];
           botRoles = bot.servers[servId].roles;
-          Object.keys(botRoles).forEach(item=>{
-            if(botRoles[item].name === args[2]){
+          Object.keys(botRoles).forEach(item => {
+            if (botRoles[item].name === args[2]) {
               roleId = botRoles[item].id;
             }
-          })
+          });
           config.adminRoles.push(roleId);
 
 
@@ -778,9 +886,9 @@ function generateUsers() {
 function hasAdminRole(userID) {
   let isAdmin = false;
 
-  bot.servers[servId].members[userID].roles.forEach(item=>{
-    if(config.adminRoles.includes(item) && isAdmin === false){
-      isAdmin= true;
+  bot.servers[servId].members[userID].roles.forEach(item => {
+    if (config.adminRoles.includes(item) && isAdmin === false) {
+      isAdmin = true;
     }
   });
   return isAdmin;
