@@ -15,7 +15,7 @@ let bot = new Discord.Client({
   autorun: true,
 });
 let corsOptions = {
-  origin: 'http://localhost:4200',
+  origin: '*',
   optionsSuccessStatus: 200,
 };
 srv.use(cors(corsOptions));
@@ -75,15 +75,24 @@ bot.on('message', function(user, userID, channelID, message, event) {
   if (servId == null) {
     servId = bot.channels[channelID].guild_id;
   }
-
-  const data = {
-    'user': user,
-    'userID': userID,
-    'channelID': channelID,
-    'message': message,
-    'event': event,
-  };
-  messageQueue.push(data);
+  let messageOperator = message.slice(0, 1);
+  let keys = Object.keys(config.operator);
+  let isCommand = false;
+  for (let k of keys){
+    if(config.operator[k] == messageOperator){
+      isCommand = true;
+    }
+  }
+  if (isCommand == true){
+    const data = {
+      'user': user,
+      'userID': userID,
+      'channelID': channelID,
+      'message': message,
+      'event': event,
+    };
+    messageQueue.push(data);
+  }
 });
 bot.on('guildMemberAdd', function(user) {
   console.log('member add:' + user.toString());
@@ -453,6 +462,11 @@ function gsHelp(args, channelID) {
           to: channelID,
           message: '```css\n#gs This command will modify a team. [synthax example: !gs modify seara/orion/perna->jeanne/perna/taranys][tips: actual team -> new team]```',
         });
+      case 'delete':
+        bot.sendMessage({
+          to: channelID,
+          message: '```css\n#gs This command will delete a team.```',
+        });
         break;
       case 'help':
         bot.sendMessage({
@@ -471,6 +485,7 @@ function gsHelp(args, channelID) {
         '\n !gs showMyTeams : Show all defence team you have saved.' +
         '\n !gs showAllTeams : Show all teams of all players.[ADMIN ONLY]' +
         '\n !gs modify : Modify a team.' +
+        '\n !gs delete : Delete a team.' +
         '\n !gs reset : Reset all teams added by a user. ```',
     });
 
