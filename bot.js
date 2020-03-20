@@ -5,7 +5,7 @@ const token = require('./config/auth').token;
 const configPath = './config/general.json';
 const log = require('simple-node-logger').createSimpleFileLogger('./bot.log');
 let config;
-let userData = null;
+let userData;
 let fs = require('fs');
 let srv = express();
 let servId = null;
@@ -605,9 +605,6 @@ function saveDef4Siege(args, userId, isStrong) {
       user.siege.nat4def.push(data);
     }
   }
-  fs.writeFile(config.path.defSiege, JSON.stringify(userData), function(err) {
-    if (err) throw err;
-  });
 }
 
 
@@ -633,9 +630,6 @@ function saveDef5Siege(args, userId, isStrong) {
       user.siege.nat5def.push(data);
     }
   }
-  fs.writeFile(config.path.defSiege, JSON.stringify(userData), function(err) {
-    if (err) throw err;
-  });
 }
 
 
@@ -887,6 +881,7 @@ function generateUsers() {
         });
       }
     }
+
     fs.writeFile(config.path.defSiege, JSON.stringify(data), function(err) {
       if (err) throw err;
     });
