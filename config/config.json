@@ -1,0 +1,29 @@
+{
+  "version": "v0.9.5",
+  "operator": {
+    "debug": "#",
+    "command": "!",
+    "setting": "%"
+  },
+  "channels": {
+    "gs": "655819815910506516"
+  },
+  "roles": {
+    "admin": [
+      "680115408837148740"
+    ],
+    "users": [
+      "680115408837148740"
+    ]
+  },
+  "filePath": {
+    "allMobs": "./data/allMobs.json",
+    "siege": "./data/siege.json"
+  },
+  "parameters": {
+    "gs": {
+      "nb4nat": 2,
+      "nb5nat": 3
+    }
+  }
+}
