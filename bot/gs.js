@@ -7,14 +7,12 @@ let userData;
 let global;
 let servId;
 module.exports = {
-    _instanciate:function (_bot,_log,_config,_global) {
+    _instanciate:function (_bot,_log,_config,_global,_data) {
         bot =_bot;
         log =_log;
         global = _global;
         config = _config;
-        if(fs.readFileSync(_config.filePath.siege)){
-            userData = JSON.parse(fs.readFileSync(_config.filePath.siege));
-        }
+        userData = _data.siege;
         log.info("[START] GS sub-module OK");
         console.log("[START] GS sub-module OK");
     },
@@ -482,9 +480,4 @@ function resetTeamByUser(userId, channelId) {
 
 
 
-setInterval(function() {
-    fs.writeFile(config.filePath.siege, JSON.stringify(userData), function(err) {
-        if (err) throw err;
-    });
-    log.info('[ACTION] save userData');
-},5900);
+

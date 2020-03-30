@@ -3,6 +3,7 @@ let log;
 let config;
 let global;
 let servId;
+let data;
 /**
  * Sub-modules
  *
@@ -10,12 +11,13 @@ let servId;
 const gs = require('./gs');
 
 module.exports = {
-    _instanciate:function (_bot,_log,_config,_global) {
+    _instanciate:function (_bot,_log,_config,_global,_data) {
         bot =_bot;
         log =_log;
         config = _config;
         global = _global;
-        gs._instanciate(_bot,_log,_config,_global);
+        data = _data;
+        gs._instanciate(_bot,_log,_config,_global,_data);
         log.info("[START] Command module OK");
         console.log("[START] Command module OK");
     },

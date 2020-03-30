@@ -5,15 +5,17 @@ let config;
 let log;
 let servId;
 let global;
+let data;
 module.exports = {
     /**
      *  Inject global variables
      */
-    _instanciate: function (_bot,_config,_log,_servId,_global) {
+    _instanciate: function (_bot,_config,_log,_global,_data) {
         bot = _bot;
         config = _config;
         log = _log;
         global = _global;
+        data = _data;
         log.info("[START] Settings module OK");
         console.log("[START] Settings module OK");
     },
@@ -96,21 +98,22 @@ function settingsManagement(user, userID, channelID, args) {
 
 function generateUsers() {
 
-        let data = [];
+        let siege = [];
         for (let user in bot.users) {
             if (! bot.users[user].bot) {
-                data.push({
-                    userId:  bot.users[user].id,
-                    nat5def: [],
-                    nat4def: [],
-                    lock: {'nat5': false, 'nat4': false},
+              if(global.hasUserRole(user,servId)){
+                  siege.push({
+                      userId:  bot.users[user].id,
+                      userName:bot.users[user].username,
+                      nat5def: [],
+                      nat4def: [],
+                      lock: {'nat5': false, 'nat4': false},
 
-                });
+                  });
+              }
             }
         }
-        fs.writeFile(config.filePath.siege, JSON.stringify(data), function(err) {
-            if (err) throw err;
-        });
+       data.siege = siege;
 
 }
 function addRole(roleName,category){
