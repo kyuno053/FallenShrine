@@ -424,7 +424,7 @@ function displayAllTeams(userId, channelId) {
 
         for (let user of userData) {
 
-            let userMsg = '```css\n#' + user.username + ':```\n```css\n-4 nat:```\n```diff\n';
+            let userMsg = '```css\n#' + user.userName + ':```\n```css\n-4 nat:```\n```diff\n';
             if (user.nat4def.length > 0) {
                 for (let def of user.nat4def) {
                     userMsg += '- ' + def.first + ' - ' + def.second + ' - ' + def.third + '\n';
