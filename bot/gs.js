@@ -337,17 +337,17 @@ function modifyTeam(args, userId, channelId) {
 
                 }
             }
-        }
-        if (isFound === true) {
-            bot.sendMessage({
-                to: channelId,
-                message: '```diff\n+ Team successfully changed! \n```',
-            });
-        } else {
-            bot.sendMessage({
-                to: channelId,
-                message: '```diff\n- Team not found! \n```',
-            });
+            if (isFound === true) {
+                bot.sendMessage({
+                    to: channelId,
+                    message: '```diff\n+ Team successfully changed! \n```',
+                });
+            } else {
+                bot.sendMessage({
+                    to: channelId,
+                    message: '```diff\n- Team not found! \n```',
+                });
+            }
         }
     }
 
