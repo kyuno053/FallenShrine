@@ -37,8 +37,14 @@ module.exports = {
       switch (args[1]) {
 
         case 'addNat5Def':
-          if (args[2] !== undefined) {
-            mobs = unsplit.split('/');
+          mobs = unsplit.split('/');
+          if ((mobs[0] === '' || mobs[0] === undefined) || (mobs[1] === '' || mobs[1] === undefined) || (mobs[2] === '' || mobs[2] === undefined)) {
+            bot.sendMessage({
+              to: channelID,
+              message: '```css\n#gs addNat5Def: Missing team parameters [ a/b/c ]\n```',
+            });
+          } else {
+
             if (mobs.length > 3) {
               bot.sendMessage({
                 to: channelID,
@@ -66,18 +72,20 @@ module.exports = {
               }
 
             }
-          } else {
-            bot.sendMessage({
-              to: channelID,
-              message: '```css\n#gs addNat5Def: Missing team parameters [ a/b/c ]\n```',
-            });
           }
 
 
           break;
         case 'addNat4Def':
-          if (args[2] !== undefined) {
-            mobs = unsplit.split('/');
+          mobs = unsplit.split('/');
+          console.log('%o', mobs);
+          if ((mobs[0] === '' || mobs[0] === undefined) || (mobs[1] === '' || mobs[1] === undefined) || (mobs[2] === '' || mobs[2] === undefined)) {
+            bot.sendMessage({
+              to: channelID,
+              message: '```css\n#gs addNat4Def: Missing team parameters [ a/b/c ]\n```',
+            });
+          } else {
+
             if (mobs.length > 3) {
               bot.sendMessage({
                 to: channelID,
@@ -105,11 +113,6 @@ module.exports = {
               }
 
             }
-          } else {
-            bot.sendMessage({
-              to: channelID,
-              message: '```css\n#gs addNat4Def: Missing team parameters [ a/b/c ]\n```',
-            });
           }
           break;
 
