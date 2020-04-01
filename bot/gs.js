@@ -78,7 +78,6 @@ module.exports = {
           break;
         case 'addNat4Def':
           mobs = unsplit.split('/');
-          console.log('%o', mobs);
           if ((mobs[0] === '' || mobs[0] === undefined) || (mobs[1] === '' || mobs[1] === undefined) || (mobs[2] === '' || mobs[2] === undefined)) {
             bot.sendMessage({
               to: channelID,
@@ -212,6 +211,7 @@ function gsHelp(args, channelID) {
           to: channelID,
           message: '```css\n#gs This command will modify a team. [synthax example: !gs modify seara/orion/perna->jeanne/perna/taranys][tips: actual team -> new team]```',
         });
+        break;
       case 'delete':
         bot.sendMessage({
           to: channelID,

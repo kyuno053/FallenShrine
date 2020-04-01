@@ -67,7 +67,8 @@ bot.on('message', function(user, userID, channelID, message, event) {
   if (servId == null) {
     servId = bot.channels[channelID].guild_id;
   }
-  let messageOperator = message.slice(0, 1);
+  let message_processed = message.replace(/\r?\n|\r/g,'');
+  let messageOperator = message_processed.slice(0, 1);
   let keys = Object.keys(_config.operator);
   let isCommand = false;
   for (let k of keys) {
@@ -80,7 +81,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
       'user': user,
       'userID': userID,
       'channelID': channelID,
-      'message': message,
+      'message': message_processed,
       'event': event,
     };
     messageQueue.push(data);
