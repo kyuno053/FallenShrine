@@ -1,0 +1,23 @@
+{
+  "settings": {
+    "setChannel": "setChannel",
+    "adminRole": "setAdminRole",
+    "userRole": "setUsersRole",
+    "siegeFile": "generateSiegeFile"
+  },
+  "debug": {
+    "ping": "ping",
+    "siegeExist": "siegeFile",
+    "userCount": "userCount"
+  },
+  "siege": {
+    "nat5def":"addNat5Def" ,
+    "nat4def": "addNat4Def",
+    "modify": "modify",
+    "delete": "delete",
+    "myTeams": "showMyTeams",
+    "allTeams": "showAllTeams",
+    "reset": "reset",
+    "help": "help"
+  }
+}
