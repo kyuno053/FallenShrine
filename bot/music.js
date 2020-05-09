@@ -57,6 +57,9 @@ module.exports = {
         if (_connection !== null) {
           if (args[2] != undefined) {
             songEvent.emit('play', args[2]);
+            let vidId = youtubeStream.getURLVideoID(args[2]);
+            let metadata = (await youtubeFetcher(vidId));
+            message.channel.send('```css\n#Music now playing:\nTitle: ' + metadata.title + '```');
 
           } else {
             message.channel.send('```diff\n- Missing parameters```');
@@ -89,22 +92,24 @@ module.exports = {
 
       case 'stop':
         _dispacher.destroy();
+        message.channel.send('```diff\n- Music stopped```');
         break;
 
       case 'pause':
         _dispacher.pause();
+        message.channel.send('```fix\n- Music paused```');
         break;
 
       case 'resume':
-        _dispacher.resume();
+        message.channel.send('```fix\n+ Music resumed```');
         break;
 
       case 'addToQueue':
         if (args[2] !== undefined) {
           let vidId = youtubeStream.getURLVideoID(args[2]);
-          try{
+          try {
             let metadata = (await youtubeFetcher(vidId));
-          }catch (e) {
+          } catch (e) {
             message.channel.send('```diff\n- Error```');
           }
 
@@ -144,6 +149,7 @@ module.exports = {
         if (_connection !== null && _dispacher !== null) {
           if (isQueuePLaying) {
             songEvent.emit('skip');
+            message.channel.send('```css\n#Music now playing:\nTitle: ' + _queue[currentPlayingInQueue].title + '```');
           } else {
             message.channel.send('```diff\n- You are not playing the queue !```');
           }
@@ -156,6 +162,7 @@ module.exports = {
         if (_connection !== null && _dispacher !== null) {
           if (isQueuePLaying) {
             songEvent.emit('previous');
+            message.channel.send('```css\n#Music now playing:\nTitle: ' + _queue[currentPlayingInQueue].title + '```');
           } else {
             message.channel.send('```diff\n- You are not playing the queue !```');
           }
@@ -236,7 +243,7 @@ module.exports = {
   },
 
 };
-songEvent.on('play',  function(url,meta) {
+songEvent.on('play', function(url, meta) {
   currentUrl = url;
   try {
     stream = youtubeStream(url, {
@@ -331,8 +338,8 @@ songEvent.on('previous', function() {
       break;
 
     case 1:
-      if (currentPlayingInQueue-- <= 0 ) {
-        currentPlayingInQueue = _queue.length-1;
+      if (currentPlayingInQueue-- <= 0) {
+        currentPlayingInQueue = _queue.length - 1;
       }
       songEvent.emit('play', _queue[currentPlayingInQueue].url);
       break;
