@@ -40,7 +40,11 @@ module.exports = {
                     }
                     break;
                 case 'music':
-                    music.management(message,args);
+                    if (message.channel.id !== config.channels.music) {
+                        message.channel.send('```diff\n- Wrong channel\nPlease go on the dedicated channel!```');
+                    } else {
+                        music.management(message,args);
+                    }
                     break;
 
                 case 'site':

@@ -84,7 +84,9 @@ module.exports = {
           connectedVoiceChannel.leave();
           connectedVoiceChannel = null;
           _connection = null;
-          _dispacher.destroy();
+         if (_dispacher !== null){
+           _dispacher.destroy();
+         }
         } else {
           message.channel.send('```diff\n- Bot not connected to a voice channel```');
         }
@@ -101,6 +103,7 @@ module.exports = {
         break;
 
       case 'resume':
+        _dispacher.resume();
         message.channel.send('```fix\n+ Music resumed```');
         break;
 
@@ -238,6 +241,9 @@ module.exports = {
         }
         message.channel.send(text);
         break;
+      case 'help':
+        musicHelp(args,message);
+        break;
     }
 
   },
@@ -249,7 +255,7 @@ songEvent.on('play', function(url, meta) {
     stream = youtubeStream(url, {
       filter: 'audioonly',
       quality: 'highestaudio',
-      highWaterMark: 1 << 35,
+      highWaterMark: 1 << 45,
     });
   } catch (e) {
     console.log(e);
@@ -352,3 +358,80 @@ songEvent.on('previous', function() {
 
 
 
+function musicHelp(args, message) {
+
+  if (args[2] != undefined) {
+    switch (args[2]) {
+      case 'join':
+        message.channel.send( '```css\n#Music This command will connect the bot to your voice channel```');
+        break;
+      case 'leave':
+        message.channel.send( '```css\n#Music This command will disconnect the bot from your voice channel```');
+        break;
+      case 'play':
+        message.channel.send( '```css\n#Music This command will play a youtube video as a song. \nExample: !music play video_url```');
+        break;
+      case 'playQueue':
+        message.channel.send( '```css\n#Music This command will play a song queue```');
+        break;
+      case 'addToQueue':
+        message.channel.send( '```css\n#Music This command will add a youtube video as a song into the queue. \nExample: !music addToQueue video_url```');
+        break;
+      case 'skip':
+        message.channel.send('```css\n#Music This command will skip to the next song in the queue```');
+        break;
+      case 'previous':
+        message.channel.send( '```css\n#Music This command will skip to the previous song in the queue```');
+        break;
+      case 'pause':
+        message.channel.send( '```css\n#Music This command will pause the current listening song.```');
+        break;
+      case 'resume':
+        message.channel.send( '```css\n#Music This command will resume the current listening song.```');
+        break;
+      case 'stop':
+        message.channel.send( '```css\n#Music This command  will stop the current listening song.```');
+        break;
+      case 'showQueue':
+        message.channel.send( '```css\n#Music This command  will display the song list in the queue```');
+        break;
+      case 'clearQueue':
+        message.channel.send( '```css\n#Music This command will delete all the songs in the queue```');
+        break;
+      case 'removeFromQueue':
+        message.channel.send( '```css\n#Music This command will delete a song from the queue. \nExample: !music removeFromQueue 1 [where 1 is the song\'s index in the queue]```');
+        break;
+      case 'current':
+        message.channel.send( '```css\n#Music This command will display  the current listening song\'s informations.```');
+        break;
+      case 'loop':
+        message.channel.send( '```css\n#Music This command will toggle the loop. \n1 time -> no loop\n2 time -> repeat all\n3 time -> repeat one ```');
+        break;
+
+      case 'help':
+        message.channel.send( 'https://tenor.com/view/hopeless-disappointed-ryan-reynolds-facepalm-embarrassed-gif-5436796');
+        break;
+
+
+    }
+  } else {
+    message.channel.send( '```css\n !music join : connect the bot' +
+      '\n !music leave : disconnect the bot' +
+      '\n !music play : play a song' +
+      '\n !music playQueue : play the song queue' +
+      '\n !music addToQueue : add a song to the queue' +
+      '\n !music removeFromQueue : remove a song from the queue' +
+      '\n !music clearQueue : reset all the queue' +
+      '\n !music showQueue : display all the queue' +
+      '\n !music skip : skip to the next song' +
+      '\n !music previous : skip to the previous song' +
+      '\n !music pause : pause the song' +
+      '\n !music resume : resume the song' +
+      '\n !music stop : stop the song' +
+      '\n !music current : display current playing song' +
+      '\n !music loop : toggle loop ```');
+
+  }
+
+
+}

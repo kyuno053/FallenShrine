@@ -59,6 +59,10 @@ function settingsManagement(message, args) {
                             config.channels.gs = message.channel.id;
                             message.channel.send( '```diff\n+ channel set for GS content!```');
                             break;
+                        case 'music':
+                            config.channels.music = message.channel.id;
+                            message.channel.send( '```diff\n+ channel set for MUSIC content!```');
+                            break;
                     }
                 } else {
                     message.channel.send('```diff\n- Missing parameter!```');
