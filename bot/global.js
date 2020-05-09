@@ -22,21 +22,21 @@ module.exports = {
      * @param servId
      * @returns {boolean}
      */
-    hasAdminRole: function (userID, servId) {
+    hasAdminRole: function (roles) {
         let isAdmin = false;
 
-        bot.servers[servId].members[userID].roles.forEach(item => {
-            if (config.roles.admin.includes(item) && isAdmin === false) {
+        roles.forEach(function(value,key,map) {
+            if(value.id === config.roles.admin){
                 isAdmin = true;
             }
         });
         return isAdmin;
     },
-    hasUserRole:function (userID,servId) {
+    hasUserRole:function (roles) {
         let isUser = false;
 
-        bot.servers[servId].members[userID].roles.forEach(item => {
-            if (config.roles.users.includes(item) && isUser === false) {
+        roles.forEach(function(value,key,map) {
+            if(value.id === config.roles.users){
                 isUser = true;
             }
         });
