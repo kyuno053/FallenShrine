@@ -39,6 +39,7 @@ module.exports = {
                         gs.management(message, args);
                     }
                     break;
+                case 'm':
                 case 'music':
                     if (message.channel.id !== config.channels.music) {
                         message.channel.send('```diff\n- Wrong channel\nPlease go on the dedicated channel!```');

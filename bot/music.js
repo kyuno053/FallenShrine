@@ -74,6 +74,7 @@ module.exports = {
       case 'playQueue':
         if (_connection !== null) {
           songEvent.emit('playQueue');
+          message.channel.send('```css\n#Music now playing:\nTitle: ' + _queue[currentPlayingInQueue].name + '```');
         } else {
           message.channel.send('```diff\n- Bot not connected in a voice channel```');
         }
@@ -84,9 +85,9 @@ module.exports = {
           connectedVoiceChannel.leave();
           connectedVoiceChannel = null;
           _connection = null;
-         if (_dispacher !== null){
-           _dispacher.destroy();
-         }
+          if (_dispacher !== null) {
+            _dispacher.destroy();
+          }
         } else {
           message.channel.send('```diff\n- Bot not connected to a voice channel```');
         }
@@ -110,11 +111,9 @@ module.exports = {
       case 'addToQueue':
         if (args[2] !== undefined) {
           let vidId = youtubeStream.getURLVideoID(args[2]);
-          try {
-            let metadata = (await youtubeFetcher(vidId));
-          } catch (e) {
-            message.channel.send('```diff\n- Error```');
-          }
+
+          let metadata = (await youtubeFetcher(vidId));
+
 
           var song = {'name': metadata.title, 'url': args[2]};
           _queue.push(song);
@@ -135,7 +134,7 @@ module.exports = {
               }
               let removed = _queue[parseInt(args[2], 10)];
               _queue.splice(parseInt(args[2], 10), 1);
-              message.channel.send('```fix\n+ Song ' + removed.title + ' successfully removed from queue```');
+              message.channel.send('```fix\n+ Song [ ' + removed.name + ' ] successfully removed from queue```');
             } else {
               message.channel.send('```diff\n- Index out of range!```');
             }
@@ -152,7 +151,7 @@ module.exports = {
         if (_connection !== null && _dispacher !== null) {
           if (isQueuePLaying) {
             songEvent.emit('skip');
-            message.channel.send('```css\n#Music now playing:\nTitle: ' + _queue[currentPlayingInQueue].title + '```');
+            message.channel.send('```css\n#Music now playing:\nTitle: ' + _queue[currentPlayingInQueue].name + '```');
           } else {
             message.channel.send('```diff\n- You are not playing the queue !```');
           }
@@ -165,7 +164,7 @@ module.exports = {
         if (_connection !== null && _dispacher !== null) {
           if (isQueuePLaying) {
             songEvent.emit('previous');
-            message.channel.send('```css\n#Music now playing:\nTitle: ' + _queue[currentPlayingInQueue].title + '```');
+            message.channel.send('```css\n#Music now playing:\nTitle: ' + _queue[currentPlayingInQueue].name + '```');
           } else {
             message.channel.send('```diff\n- You are not playing the queue !```');
           }
@@ -181,7 +180,7 @@ module.exports = {
 
       case 'showQueue':
         if (_queue.length !== 0) {
-          text = '```css\n#Music Queue\n';
+          let text = '```css\n#Music Queue\n';
 
           for (let i = 0; i < _queue.length; i++) {
             song = '[' + i + '] ' + _queue[i].name + '\n';
@@ -242,7 +241,7 @@ module.exports = {
         message.channel.send(text);
         break;
       case 'help':
-        musicHelp(args,message);
+        musicHelp(args, message);
         break;
     }
 
@@ -357,65 +356,65 @@ songEvent.on('previous', function() {
 });
 
 
-
 function musicHelp(args, message) {
 
   if (args[2] != undefined) {
     switch (args[2]) {
       case 'join':
-        message.channel.send( '```css\n#Music This command will connect the bot to your voice channel```');
+        message.channel.send('```css\n#Music This command will connect the bot to your voice channel```');
         break;
       case 'leave':
-        message.channel.send( '```css\n#Music This command will disconnect the bot from your voice channel```');
+        message.channel.send('```css\n#Music This command will disconnect the bot from your voice channel```');
         break;
       case 'play':
-        message.channel.send( '```css\n#Music This command will play a youtube video as a song. \nExample: !music play video_url```');
+        message.channel.send('```css\n#Music This command will play a youtube video as a song. \nExample: !music play video_url```');
         break;
       case 'playQueue':
-        message.channel.send( '```css\n#Music This command will play a song queue```');
+        message.channel.send('```css\n#Music This command will play a song queue```');
         break;
       case 'addToQueue':
-        message.channel.send( '```css\n#Music This command will add a youtube video as a song into the queue. \nExample: !music addToQueue video_url```');
+        message.channel.send('```css\n#Music This command will add a youtube video as a song into the queue. \nExample: !music addToQueue video_url```');
         break;
       case 'skip':
         message.channel.send('```css\n#Music This command will skip to the next song in the queue```');
         break;
       case 'previous':
-        message.channel.send( '```css\n#Music This command will skip to the previous song in the queue```');
+        message.channel.send('```css\n#Music This command will skip to the previous song in the queue```');
         break;
       case 'pause':
-        message.channel.send( '```css\n#Music This command will pause the current listening song.```');
+        message.channel.send('```css\n#Music This command will pause the current listening song.```');
         break;
       case 'resume':
-        message.channel.send( '```css\n#Music This command will resume the current listening song.```');
+        message.channel.send('```css\n#Music This command will resume the current listening song.```');
         break;
       case 'stop':
-        message.channel.send( '```css\n#Music This command  will stop the current listening song.```');
+        message.channel.send('```css\n#Music This command  will stop the current listening song.```');
         break;
       case 'showQueue':
-        message.channel.send( '```css\n#Music This command  will display the song list in the queue```');
+        message.channel.send('```css\n#Music This command  will display the song list in the queue```');
         break;
       case 'clearQueue':
-        message.channel.send( '```css\n#Music This command will delete all the songs in the queue```');
+        message.channel.send('```css\n#Music This command will delete all the songs in the queue```');
         break;
       case 'removeFromQueue':
-        message.channel.send( '```css\n#Music This command will delete a song from the queue. \nExample: !music removeFromQueue 1 [where 1 is the song\'s index in the queue]```');
+        message.channel.send('```css\n#Music This command will delete a song from the queue. \nExample: !music removeFromQueue 1 [where 1 is the song\'s index in the queue]```');
         break;
       case 'current':
-        message.channel.send( '```css\n#Music This command will display  the current listening song\'s informations.```');
+        message.channel.send('```css\n#Music This command will display  the current listening song\'s informations.```');
         break;
       case 'loop':
-        message.channel.send( '```css\n#Music This command will toggle the loop. \n1 time -> no loop\n2 time -> repeat all\n3 time -> repeat one ```');
+        message.channel.send('```css\n#Music This command will toggle the loop. \n1 time -> no loop\n2 time -> repeat all\n3 time -> repeat one ```');
         break;
 
       case 'help':
-        message.channel.send( 'https://tenor.com/view/hopeless-disappointed-ryan-reynolds-facepalm-embarrassed-gif-5436796');
+        message.channel.send('https://tenor.com/view/hopeless-disappointed-ryan-reynolds-facepalm-embarrassed-gif-5436796');
         break;
 
 
     }
   } else {
-    message.channel.send( '```css\n !music join : connect the bot' +
+    message.channel.send('```css\n [!music or !m]' +
+      '\n !music join : connect the bot' +
       '\n !music leave : disconnect the bot' +
       '\n !music play : play a song' +
       '\n !music playQueue : play the song queue' +
