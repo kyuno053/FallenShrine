@@ -16,8 +16,7 @@ module.exports = {
     log.info('[START] GS sub-module OK');
     console.log('[START] GS sub-module OK');
   },
-  management: function(user, userID, channelID, args, _servId) {
-    servId = _servId;
+  management: function(message, args) {
     if (args.length > 1) {
 
       args_copy = [...args];
@@ -39,36 +38,21 @@ module.exports = {
         case 'addNat5Def':
           mobs = unsplit.split('/');
           if ((mobs[0] === '' || mobs[0] === undefined) || (mobs[1] === '' || mobs[1] === undefined) || (mobs[2] === '' || mobs[2] === undefined)) {
-            bot.sendMessage({
-              to: channelID,
-              message: '```css\n#gs addNat5Def: Missing team parameters [ a/b/c ]\n```',
-            });
+           message.channel.send( '```css\n#gs addNat5Def: Missing team parameters [ a/b/c ]\n```');
           } else {
 
             if (mobs.length > 3) {
-              bot.sendMessage({
-                to: channelID,
-                message: '```css\n#gs your team is too long!\n```',
-              });
-            } else if (isLocked(userID, 5)) {
-              bot.sendMessage({
-                to: channelID,
-                message: '```css\n#gs Too much registered teams!\n```',
-              });
+             message.channel.send( '```css\n#gs your team is too long!\n```');
+            } else if (isLocked(message.author.id, 5)) {
+             message.channel.send( '```css\n#gs Too much registered teams!\n```');
             } else {
 
               if (args[args.length - 1] == 'strong') {
-                saveDef5Siege(mobs, userID, true);
-                bot.sendMessage({
-                  to: channelID,
-                  message: '```css\n#gs your team\n```\n```diff\n- ' + mobs[0] + ' ' + mobs[1] + ' ' + mobs[2] + '\n```\n```fix\n+ Strong team successfully added! \n```',
-                });
+                saveDef5Siege(mobs, message.author.id, true);
+                message.channel.send( '```css\n#gs your team\n```\n```diff\n- ' + mobs[0] + ' ' + mobs[1] + ' ' + mobs[2] + '\n```\n```fix\n+ Strong team successfully added! \n```');
               } else {
-                saveDef5Siege(mobs, userID, false);
-                bot.sendMessage({
-                  to: channelID,
-                  message: '```css\n#gs your team\n```\n```diff\n- ' + mobs[0] + ' ' + mobs[1] + ' ' + mobs[2] + '\n```\n```fix\n+ Team successfully added! \n```',
-                });
+                saveDef5Siege(mobs, message.author.id, false);
+                message.channel.send('```css\n#gs your team\n```\n```diff\n- ' + mobs[0] + ' ' + mobs[1] + ' ' + mobs[2] + '\n```\n```fix\n+ Team successfully added! \n```');
               }
 
             }
@@ -79,36 +63,21 @@ module.exports = {
         case 'addNat4Def':
           mobs = unsplit.split('/');
           if ((mobs[0] === '' || mobs[0] === undefined) || (mobs[1] === '' || mobs[1] === undefined) || (mobs[2] === '' || mobs[2] === undefined)) {
-            bot.sendMessage({
-              to: channelID,
-              message: '```css\n#gs addNat4Def: Missing team parameters [ a/b/c ]\n```',
-            });
+            message.channel.send('```css\n#gs addNat4Def: Missing team parameters [ a/b/c ]\n```');
           } else {
 
             if (mobs.length > 3) {
-              bot.sendMessage({
-                to: channelID,
-                message: '```css\n#gs your team is too long!\n```',
-              });
-            } else if (isLocked(userID, 4)) {
-              bot.sendMessage({
-                to: channelID,
-                message: '```css\n#gs Too much registered teams!\n```',
-              });
+              message.channel.send( '```css\n#gs your team is too long!\n```');
+            } else if (isLocked(message.author.id, 4)) {
+              message.channel.send( '```css\n#gs Too much registered teams!\n```');
             } else {
 
               if (args[args.length - 1] == 'strong') {
-                saveDef4Siege(mobs, userID, true);
-                bot.sendMessage({
-                  to: channelID,
-                  message: '```css\n#gs your team\n```\n```fix\n- ' + mobs[0] + ' ' + mobs[1] + ' ' + mobs[2] + '\n```\n```fix\n+ Strong team successfully added! \n```',
-                });
+                saveDef4Siege(mobs, message.author.id, true);
+                message.channel.send('```css\n#gs your team\n```\n```fix\n- ' + mobs[0] + ' ' + mobs[1] + ' ' + mobs[2] + '\n```\n```fix\n+ Strong team successfully added! \n```');
               } else {
-                saveDef4Siege(mobs, userID, false);
-                bot.sendMessage({
-                  to: channelID,
-                  message: '```css\n#gs your team\n```\n```fix\n- ' + mobs[0] + ' ' + mobs[1] + ' ' + mobs[2] + '\n```\n```fix\n+ Team successfully added! \n```',
-                });
+                saveDef4Siege(mobs, message.author.id, false);
+                message.channel.send('```css\n#gs your team\n```\n```fix\n- ' + mobs[0] + ' ' + mobs[1] + ' ' + mobs[2] + '\n```\n```fix\n+ Team successfully added! \n```');
               }
 
             }
@@ -117,50 +86,41 @@ module.exports = {
 
         case 'modify':
           if (args[2] !== undefined) {
-            modifyTeam(unsplit, userID, channelID);
+            modifyTeam(unsplit, message);
           } else {
-            bot.sendMessage({
-              to: channelID,
-              message: '```css\n#gs modify: Missing team parameters [ a/b/c->new_a/new_b/new_c ]\n```',
-            });
+            message.channel.send('```css\n#gs modify: Missing team parameters [ a/b/c->new_a/new_b/new_c ]\n```');
           }
           break;
 
         case 'delete':
           if (args[2] !== undefined) {
-            deleteTeams(unsplit, userID, channelID);
+            deleteTeams(unsplit, message);
           } else {
-            bot.sendMessage({
-              to: channelID,
-              message: '```css\n#gs delete: Missing team parameters [ a/b/c ]\n```',
-            });
+            message.channel.send( '```css\n#gs delete: Missing team parameters [ a/b/c ]\n```');
           }
           break;
 
 
         case 'showMyTeams':
-          displayTeamsByUser(userID, channelID);
+          displayTeamsByUser(message);
           break;
 
         case 'showAllTeams':
-          displayAllTeams(userID, channelID);
+          displayAllTeams(message);
 
           break;
         case 'reset':
-          resetTeamByUser(userID, channelID);
+          resetTeamByUser(message);
           break;
 
 
         case 'help':
-          gsHelp(args, channelID);
+          gsHelp(args, message);
           break;
 
       }
     } else {
-      bot.sendMessage({
-        to: channelID,
-        message: '```css\n#gs Missing parameter(s)\n```',
-      });
+      message.channel.send( '```css\n#gs Missing parameter(s)\n```');
     }
   },
 
@@ -172,72 +132,45 @@ module.exports = {
  * @param args
  * @param channelID
  */
-function gsHelp(args, channelID) {
+function gsHelp(args, message) {
 
   if (args[2] != undefined) {
     switch (args[2]) {
       case 'addNat5Def':
-        bot.sendMessage({
-          to: channelID,
-          message: '```css\n#gs This command is make for save a defence in 5 stars team in gs. for this, you have to put in the tchat !gs addNat5Def followed by the name of a monster1, separated by a /, followed by the name of a monster2, separated by a /, followed by the name of a monster3.```',
-        });
+        message.channel.send( '```css\n#gs This command is make for save a defence in 5 stars team in gs. for this, you have to put in the tchat !gs addNat5Def followed by the name of a monster1, separated by a /, followed by the name of a monster2, separated by a /, followed by the name of a monster3.```');
         break;
       case 'addNat4Def':
-        bot.sendMessage({
-          to: channelID,
-          message: '```css\n#gs This command is make for save a defence in 4 stars team in gs. for this, you have to put in the tchat !gs addNat4Def followed by the name of a monster1, separated by a /, followed by the name of a monster2, separated by a /, followed by the name of a monster3.```',
-        });
+        message.channel.send( '```css\n#gs This command is make for save a defence in 4 stars team in gs. for this, you have to put in the tchat !gs addNat4Def followed by the name of a monster1, separated by a /, followed by the name of a monster2, separated by a /, followed by the name of a monster3.```');
         break;
       case 'showMyTeams':
-        bot.sendMessage({
-          to: channelID,
-          message: '```css\n#gs This command will show you all defence team, 4 stars and 5 stars, that you have saved in the bot.```',
-        });
+        message.channel.send( '```css\n#gs This command will show you all defence team, 4 stars and 5 stars, that you have saved in the bot.```');
         break;
       case 'showAllTeams':
-        bot.sendMessage({
-          to: channelID,
-          message: '```css\n#gs This command will show all teams, 4 stars and 5 stars, saved in the bot, of all players who are registerd.\n[ONLY FOR ADMIN USERS!]```',
-        });
+        message.channel.send( '```css\n#gs This command will show all teams, 4 stars and 5 stars, saved in the bot, of all players who are registerd.\n[ONLY FOR ADMIN USERS!]```');
         break;
       case 'reset':
-        bot.sendMessage({
-          to: channelID,
-          message: '```css\n#gs This command will reset all teams added by the user who use it.```',
-        });
+        message.channel.send( '```css\n#gs This command will reset all teams added by the user who use it.```');
         break;
       case 'modify':
-        bot.sendMessage({
-          to: channelID,
-          message: '```css\n#gs This command will modify a team. [synthax example: !gs modify seara/orion/perna->jeanne/perna/taranys][tips: actual team -> new team]```',
-        });
+        message.channel.send('```css\n#gs This command will modify a team. [synthax example: !gs modify seara/orion/perna->jeanne/perna/taranys][tips: actual team -> new team]```');
         break;
       case 'delete':
-        bot.sendMessage({
-          to: channelID,
-          message: '```css\n#gs This command will delete a team.```',
-        });
+        message.channel.send( '```css\n#gs This command will delete a team.```');
         break;
       case 'help':
-        bot.sendMessage({
-          to: channelID,
-          message: 'https://tenor.com/view/hopeless-disappointed-ryan-reynolds-facepalm-embarrassed-gif-5436796',
-        });
+        message.channel.send( 'https://tenor.com/view/hopeless-disappointed-ryan-reynolds-facepalm-embarrassed-gif-5436796');
         break;
 
 
     }
   } else {
-    bot.sendMessage({
-      to: channelID,
-      message: '```css\n !gs addNat5Def monster1/monster2/monster3 : Add a 5 star tower def in gs defence team.' +
+    message.channel.send( '```css\n !gs addNat5Def monster1/monster2/monster3 : Add a 5 star tower def in gs defence team.' +
         '\n !gs addNat4Def monster1/monster2/monster3 : Add a 4 star tower def in gs defence team.' +
         '\n !gs showMyTeams : Show all defence team you have saved.' +
         '\n !gs showAllTeams : Show all teams of all players.[ADMIN ONLY]' +
         '\n !gs modify : Modify a team.' +
         '\n !gs delete : Delete a team.' +
-        '\n !gs reset : Reset all teams added by a user. ```',
-    });
+        '\n !gs reset : Reset all teams added by a user. ```');
 
   }
 
@@ -293,11 +226,11 @@ function saveDef5Siege(args, userId, isStrong) {
   }
 }
 
-function deleteTeams(args, userId, channelId) {
+function deleteTeams(args, message) {
   let actual = args.split('/');
   let isFound = false;
   for (let user of userData) {
-    if (user.userId === userId) {
+    if (user.userId === message.author.id) {
 
       for (let def4 of user.nat4def) {
         if (isFound === false) {
@@ -319,15 +252,9 @@ function deleteTeams(args, userId, channelId) {
         }
       }
       if (isFound === true) {
-        bot.sendMessage({
-          to: channelId,
-          message: '```diff\n+ Team successfully deleted! \n```',
-        });
+        message.channel.send( '```diff\n+ Team successfully deleted! \n```');
       } else {
-        bot.sendMessage({
-          to: channelId,
-          message: '```diff\n- Team not found! \n```',
-        });
+        message.channel.send('```diff\n- Team not found! \n```');
       }
     }
 
@@ -336,21 +263,21 @@ function deleteTeams(args, userId, channelId) {
 
 }
 
-function modifyTeam(args, userId, channelId) {
+function modifyTeam(args, message) {
 
   let teams = args.split('->');
   let actual = teams[0].split('/');
   let future = teams[1].split('/');
   let isFound = false;
   for (let user of userData) {
-    if (user.userId === userId) {
+    if (user.userId === message.author.id) {
 
       for (let def4 of user.nat4def) {
         if (isFound === false) {
           if (def4.first === actual[0] && def4.second === actual[1] && def4.third === actual[2]) {
             isFound = true;
             user.nat4def.splice(user.nat4def.indexOf(def4), 1);
-            saveDef4Siege(future, userId, false);
+            saveDef4Siege(future, message.author.id, false);
           }
         }
       }
@@ -360,22 +287,16 @@ function modifyTeam(args, userId, channelId) {
             isFound = true;
             const index = user.nat5def.indexOf(def5);
             user.nat5def.splice(index, 1);
-            saveDef5Siege(future, userId, false);
+            saveDef5Siege(future, message.author.id, false);
           }
 
 
         }
       }
       if (isFound === true) {
-        bot.sendMessage({
-          to: channelId,
-          message: '```diff\n+ Team successfully changed! \n```',
-        });
+        message.channel.send( '```diff\n+ Team successfully changed! \n```');
       } else {
-        bot.sendMessage({
-          to: channelId,
-          message: '```diff\n- Team not found! \n```',
-        });
+        message.channel.send( '```diff\n- Team not found! \n```');
       }
     }
   }
@@ -410,11 +331,11 @@ function isLocked(userId, nat) {
 
 }
 
-function displayTeamsByUser(userId, chanelId) {
+function displayTeamsByUser(msg) {
 
   let message = '```css\n#defs Your teams:\n```\n\n```css\n-4 nat:```\n```diff\n';
   for (let user of userData) {
-    if (user.userId === userId) {
+    if (user.userId === msg.author.id) {
 
       if (user.nat4def.length > 0) {
         for (let def of user.nat4def) {
@@ -438,17 +359,14 @@ function displayTeamsByUser(userId, chanelId) {
     }
   }
 
-  bot.sendMessage({
-    to: chanelId,
-    message: message,
-  });
+  msg.channel.send(message);
 
 }
 
-function displayAllTeams(userId, channelId) {
+function displayAllTeams(msg) {
 
 
-  if ((userId === bot.servers[Object.keys(bot.servers)[0]].owner_id) || global.hasAdminRole(userId, servId)) {
+  if ((msg.author.id === msg.guild.ownerID) || global.hasAdminRole(msg.member.roles.cache)) {
     let message = '```css\n#defs Registered teams:\n```\n';
 
     for (let user of userData) {
@@ -477,32 +395,23 @@ function displayAllTeams(userId, channelId) {
 
     }
 
-    bot.sendMessage({
-      to: channelId,
-      message: message,
-    });
+   msg.channel.send(message);
 
   } else {
-    bot.sendMessage({
-      to: channelId,
-      message: '```diff\n- Unauthorized request!```',
-    });
+   msg.channel.send( '```diff\n- Unauthorized request!```');
   }
 
 
 }
 
-function resetTeamByUser(userId, channelId) {
-  bot.sendMessage({
-    to: channelId,
-    message: '```css\n#defs  Reset teams\n```\n```diff\n- Your defs are now reset\n```',
-  });
+function resetTeamByUser(message) {
   for (let user of userData) {
-    if (user.userId === userId) {
+    if (user.userId === message.author.id) {
       user.nat5def = [];
       user.nat4def = [];
     }
   }
+  message.channel.send( '```css\n#defs  Reset teams\n```\n```diff\n- Your defs are now reset\n```');
 
 }
 
